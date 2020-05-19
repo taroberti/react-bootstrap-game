@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
 const App = () => {
-  const [ words, setWords ] = useState('');
-  const [ countdownTimer, setCountdownTimer ] = useState(5);
+  const TIMER_INIT = 5;
+  const WORDS_INIT = '';
+  
+  const [ words, setWords ] = useState(WORDS_INIT);
+  const [ numWords, setNumWords ] = useState(0);
+  const [ countdownTimer, setCountdownTimer ] = useState(TIMER_INIT);
   const [ gameStarted, setGameStarted ] = useState(false);
 
   useEffect(() => {
@@ -11,7 +15,7 @@ const App = () => {
         setCountdownTimer(time => time - 1);
       }, 1000);
     } else if (countdownTimer === 0) {
-      setGameStarted(false);
+      handleEndGame();
     }
   }, [ countdownTimer, gameStarted ]);
 
@@ -28,15 +32,30 @@ const App = () => {
 
   const handleStartGame = () => {
     setGameStarted(true);
+    setCountdownTimer(TIMER_INIT);
+    setWords(WORDS_INIT);
+  }
+
+  const handleEndGame = () => {
+    setGameStarted(false);
+    setNumWords(wordCount(words));
   }
 
   return (
     <div>
       <h1>Speed Typing Game</h1>
-      <textarea value={ words } onChange={ handleTextarea } />
+      <textarea 
+        value={ words }
+        onChange={ handleTextarea }
+        disabled={ !gameStarted }
+      />
       <h4>Time Remaining: { countdownTimer }</h4>
-      <button onClick={ handleStartGame }>Start!</button>
-      <h1>Word Count: { wordCount(words) }</h1>
+      <button
+        onClick={ handleStartGame }
+        disabled={ gameStarted }>
+          Start!
+      </button>
+      <h1>Word Count: { numWords }</h1>
     </div>
   );
 }
