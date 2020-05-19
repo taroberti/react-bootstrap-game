@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const App = () => {
   const TIMER_INIT = 5;
   const WORDS_INIT = '';
-  
+
   const [ words, setWords ] = useState(WORDS_INIT);
   const [ numWords, setNumWords ] = useState(0);
   const [ countdownTimer, setCountdownTimer ] = useState(TIMER_INIT);
   const [ gameStarted, setGameStarted ] = useState(false);
 
+  const textareaRef = useRef(null);
+
   useEffect(() => {
+    if(gameStarted && countdownTimer === TIMER_INIT)
+      textareaRef.current.focus();
+
     if(gameStarted && countdownTimer > 0) {
       setTimeout(() => {
         setCountdownTimer(time => time - 1);
@@ -24,10 +29,9 @@ const App = () => {
   }
 
   const wordCount = text => {
-    if(text === '')
-      return 0;
+    const count = text.split(' ');
 
-    return text.trim().split(' ').length;
+    return count.filter(word => word !== '').length;
   }
 
   const handleStartGame = () => {
@@ -44,7 +48,8 @@ const App = () => {
   return (
     <div>
       <h1>Speed Typing Game</h1>
-      <textarea 
+      <textarea
+        ref={ textareaRef }
         value={ words }
         onChange={ handleTextarea }
         disabled={ !gameStarted }
